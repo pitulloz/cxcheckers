@@ -99,7 +99,60 @@ func PopulateNewBoard() {
 
 
 func PrintBoard() {
-	str.print("BoardAsString()")
+	str.print(BoardAsString())
+}
+
+func BoardAsString() (bs str) {
+	//pieces := map[i32]str{
+	//	0: "=",
+	//	1: "X",
+	//	2: "O",
+	//	3: " ",
+	//	7: "%",
+	//	8: "0",
+	//}
+
+	var row [8]str
+	row[0] = "8"
+	row[1] = "7"
+	row[2] = "6"
+	row[3] = "5"
+	row[4] = "4"
+	row[5] = "3"
+	row[6] = "2"
+	row[7] = "1"
+
+	var pieces [9]str
+	pieces[0] = "="
+	pieces[1] = "X"
+	pieces[2] = "O"
+	pieces[3] = " "
+	pieces[4] = " "
+	pieces[5] = " "
+	pieces[6] = " "
+	pieces[7] = "%"
+	pieces[8] = "0"
+	
+	bs = ""
+	var i i32
+	var j i32
+
+	for i := 0; i < 8; i++ {
+		bs = bs + row[i]
+		for j := 0; j < 8; j++ {
+			bs = bs + " | " + pieces[board[1][2]]
+			//bs = bs + " | " + pieces[board[i][j]]
+			//i32.print(i)
+			//i32.print(j)
+			//i32.print(board[i][j])
+		}
+		bs = bs + " |\n"
+
+	}
+
+	bs = bs + "    A   B   C   D   E   F   G   H "
+
+	//return boardString
 }
 
 package checkers
