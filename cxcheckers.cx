@@ -109,8 +109,11 @@ func triple (n i32) (res i32) {
 	res = i32.mul(n, 3)
 }
 
+var playing bool
+
 func PlayerTurn(player i32, capOnly bool, lastPos [2]i32) {
 	board.PrintBoard()
+	playing = false
 }
 
 package main
@@ -118,7 +121,7 @@ import "board"
 import "checkers"
 
 func main () {
-	var playing bool
+	
 	var lp[2]i32
 
         str.print("Welcome to CX Checkers!\n")
@@ -128,12 +131,34 @@ func main () {
 	str.print("\nHave fun!\n")
 
 	board.PopulateNewBoard()
-	playing = true
+	checkers.playing = true
 
 	lp[0] = 0
 	lp[1] = 0
 
+	//checkers.PlayerTurn(1, false, lp)
+
+	//for true {
+		
+	//	checkers.PlayerTurn(1, false, lp)
+	//	if !checkers.playing {
+	//		break
+	//	}
+	//	checkers.PlayerTurn(2, false, lp)
+	//}
+
+	play_loop:
+
 	checkers.PlayerTurn(1, false, lp)
+	if !checkers.playing {
+		goto end_play
+	}
+	checkers.PlayerTurn(2, false, lp)
+	goto play_loop
+
+	end_play:
+
+	str.print("\nGame Over!\n")
 
 	//var p Point
 	//p = board.Point{x: 10, y: 20}
