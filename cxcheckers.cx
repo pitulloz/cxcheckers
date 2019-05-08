@@ -1,14 +1,5 @@
 package board
 
-type Point struct {
-	x i32
-	y i32
-}
-
-func double (n i32) (res i32) {
-	res = i32.add(n, n)
-}
-
 var board [8][8]i32
 
 func PopulateNewBoard() {
@@ -85,6 +76,7 @@ func PopulateNewBoard() {
 	board[7][6] = 1
 	board[7][7] = 0
 
+// BUG, NOT WORKING
 //	board = [8][8]i32{
 //		{0, 2, 0, 2, 0, 2, 0, 2},
 //		{2, 0, 2, 0, 2, 0, 2, 0},
@@ -103,14 +95,6 @@ func PrintBoard() {
 }
 
 func BoardAsString() (bs str) {
-	//pieces := map[i32]str{
-	//	0: "=",
-	//	1: "X",
-	//	2: "O",
-	//	3: " ",
-	//	7: "%",
-	//	8: "0",
-	//}
 
 	var row [8]str
 	row[0] = "8"
@@ -121,30 +105,24 @@ func BoardAsString() (bs str) {
 	row[5] = "3"
 	row[6] = "2"
 	row[7] = "1"
-
-	var pieces [9]str
-	pieces[0] = "="
-	pieces[1] = "X"
-	pieces[2] = "O"
-	pieces[3] = " "
-	pieces[4] = " "
-	pieces[5] = " "
-	pieces[6] = " "
-	pieces[7] = "%"
-	pieces[8] = "0"
 	
 	bs = ""
-	var i i32
-	var j i32
 
 	for i := 0; i < 8; i++ {
 		bs = bs + row[i]
 		for j := 0; j < 8; j++ {
-			bs = bs + " | " + pieces[board[1][2]]
-			//bs = bs + " | " + pieces[board[i][j]]
-			//i32.print(i)
-			//i32.print(j)
-			//i32.print(board[i][j])
+
+			bs = bs + " | "
+			if board[i][j] == 0 {
+				bs = bs + "="
+			} else if board[i][j] == 1 {
+				bs = bs + "X"
+			} else if board[i][j] == 2 {
+				bs = bs + "O"
+			} else if board[i][j] == 3 {
+				bs = bs + " "
+			}
+
 		}
 		bs = bs + " |\n"
 
@@ -152,15 +130,10 @@ func BoardAsString() (bs str) {
 
 	bs = bs + "    A   B   C   D   E   F   G   H "
 
-	//return boardString
 }
 
 package checkers
 import "board"
-
-func triple (n i32) (res i32) {
-	res = i32.mul(n, 3)
-}
 
 var playing bool
 
@@ -213,19 +186,6 @@ func main () {
 
 	str.print("\nGame Over!\n")
 
-	//var p Point
-	//p = board.Point{x: 10, y: 20}
 
-	//i32.print(p.x)
-	//i32.print(p.y)
-	          
-	//var double i32
-	//var triple i32
-	
-	//double = board.double(10)
-	//triple = checkers.triple(10)
-
-	//i32.print(double)
-	//i32.print(triple)
 }
 

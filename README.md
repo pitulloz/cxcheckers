@@ -18,14 +18,14 @@ You can also 'quit' at anytime
 
 Have fun!
 
-8 | O | O | O | O | O | O | O | O |
-7 | O | O | O | O | O | O | O | O |
-6 | O | O | O | O | O | O | O | O |
-5 | O | O | O | O | O | O | O | O |
-4 | O | O | O | O | O | O | O | O |
-3 | O | O | O | O | O | O | O | O |
-2 | O | O | O | O | O | O | O | O |
-1 | O | O | O | O | O | O | O | O |
+8 | = | O | = | O | = | O | = | O |
+7 | O | = | O | = | O | = | O | = |
+6 | = | O | = | O | = | O | = | O |
+5 |   | = |   | = |   | = |   | = |
+4 | = |   | = |   | = |   | = |   |
+3 | X | = | X | = | X | = | X | = |
+2 | = | X | = | X | = | X | = | X |
+1 | X | = | X | = | X | = | X | = |
     A   B   C   D   E   F   G   H 
 
 Game Over!
