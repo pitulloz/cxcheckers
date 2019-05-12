@@ -135,10 +135,36 @@ func BoardAsString() (bs str) {
 package checkers
 import "board"
 
+func GetPossiblePos(player i32) (vert [2]i32) {
+	vert[0] = -1
+	if player == 2 {
+		vert[0] = 1
+	}
+	vert[1] = -2
+	if player == 2 {
+		vert[1] = 2
+	}
+}
+
+func ValidMoves(player i32) (valids [][2][2]i32) {
+	//valids [][2][2]i32
+	var vert [2]i32
+	vert = GetPossiblePos(player)
+	valids = append(valids, [2][2]i32{0, 0})
+}
+
 var playing bool
 
 func PlayerTurn(player i32, capOnly bool, lastPos [2]i32) {
 	board.PrintBoard()
+
+	var valids [][2][2]i32
+	valids = ValidMoves(player)
+
+	if len(valids) == 0 {
+		str.print("No moves for you, bad luck!")
+
+	} 
 	playing = false
 }
 
@@ -148,7 +174,7 @@ import "checkers"
 
 func main () {
 	
-	var lp[2]i32
+	var lp [2]i32
 
         str.print("Welcome to CX Checkers!\n")
 	str.print("You play by specifying which piece to move, and the position to move it too")
