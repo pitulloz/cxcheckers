@@ -76,7 +76,6 @@ func PopulateNewBoard() {
 	board[7][6] = 1
 	board[7][7] = 0
 
-// BUG, NOT WORKING
 //	board = [8][8]i32{
 //		{0, 2, 0, 2, 0, 2, 0, 2},
 //		{2, 0, 2, 0, 2, 0, 2, 0},
@@ -132,6 +131,13 @@ func BoardAsString() (bs str) {
 
 }
 
+func OnBoard(vert i32, hoz i32) (ob bool) {
+	if vert > 7 || vert < 0 || hoz > 7 || hoz < 0 {
+		return false
+	}
+	return true
+}
+
 package checkers
 import "board"
 
@@ -145,6 +151,81 @@ func GetPossiblePos(player i32) (vert [2]i32) {
 		vert[1] = 2
 	}
 }
+
+
+func ValidMove(player i32, mov1 [2]i32, mov2 [2]i32, capOnly bool, noLog bool) (valid bool) {
+
+	if board.OnBoard(mov1[0], mov1[1]) == false || board.OnBoard(mov2[0], mov2[1]) == false {
+		return false
+	}
+
+	var enemy i32
+	enemy = 2
+	if player == 2 {
+		enemy = 1
+	}
+
+	if board.board[mov1[0]][mov1[1]] != player && board.board[mov1[0]][mov1[1]] != player+6 {
+		if !noLog {
+			str.print("Starting posistion invalid ")
+			i32.print(board.board[mov1[0]][mov1[1]])
+		}
+		return false
+	}
+	if board.board[mov2[0]][mov2[1]] != 3 {
+		if !noLog {
+			str.print("Moving posistion invalid ")
+			i32.print(board.board[mov2[0]][mov2[1]])
+		}
+		return false
+	}
+
+	if CaptureChecks(player, mov1, mov2, capOnly, enemy, false) {
+		return true
+	} else if board.board[mov1[0]][mov1[1]] == player+6 && CaptureChecks(player, mov1, mov2, capOnly, enemy, true) {
+		return true
+	}
+
+	return false
+}
+
+
+func CaptureChecks(player i32, mov1 [2]i32, mov2 [2]i32, capOnly bool, enemy i32, kingFlip bool) (cc bool) {
+	var hoz i32
+	hoz = mov1[1] - mov2[1]
+	var vert [2]i32
+	vert = GetPossiblePos(player)
+	if kingFlip {
+		vert[0] = -vert[0]
+		vert[1] = -vert[1]
+	}
+
+	//if mov2[0]-mov1[0] == vert[0] && math.Abs(float64(hoz)) == 1 && !capOnly {
+
+	var abshoz bool
+	abshoz = false
+	if hoz == 1 || hoz-1 == 0 {
+		abshoz = true
+	}
+
+	if mov2[0]-mov1[0] == vert[0] && abshoz && !capOnly {
+		return true
+	}
+
+	if mov2[0]-mov1[0] == vert[1] {
+		if hoz == -2 && board.OnBoard(mov1[0]+vert[0], mov1[1]+1) {
+			if board.board[mov1[0]+vert][mov1[1]+1] == enemy || board.board[mov1[0]+vert[0]][mov1[1]+1] == enemy+6 {
+				return true
+			}
+		} else if hoz == 2 && board.OnBoard(mov1[0]+vert[0], mov1[1]-1) {
+			if board.board[mov1[0]+vert[0]][mov1[1]-1] == enemy || board.board[mov1[0]+vert[0]][mov1[1]-1] == enemy+6 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 
 func ValidMoves(player i32) (valids [][2][2]i32) {
 	//valids [][2][2]i32
@@ -167,8 +248,30 @@ func ValidMoves(player i32) (valids [][2][2]i32) {
 			checkMoves[3][0] = i + vert[1]
 			checkMoves[3][1] = j - 2
 
+			var currentPos [2]i32
+			currentPos = [2]i32{i, j}
+
 			for i := 0; i < 4; i++ {
-				valids = append(valids, [2][2]i32{0, 0})
+				if ValidMove(player, currentPos, checkMoves[i], false, true) {
+					valids = append(valids, [2][2]i32{currentPos, checkMoves[i]})
+				}
+			}
+
+			if board.board[i][j] == player+6 {
+				var kingMoves [4][2]i32
+				checkMoves[0][0] = i - vert[0]
+				checkMoves[0][1] = j + 1
+				checkMoves[1][0] = i - vert[0]
+				checkMoves[1][1] = j - 1
+				checkMoves[2][0] = i - vert[1]
+				checkMoves[2][1] = j + 2
+				checkMoves[3][0] = i - vert[1]
+				checkMoves[3][1] = j - 2
+				for i := 0; i < 4; i++ {
+					if ValidMove(player, currentPos, kingMoves[i], false, true) {
+						valids = append(valids, [2][2]i32{currentPos, checkMoves[i]})
+					}
+				}
 			}
 			
 			
@@ -179,6 +282,8 @@ func ValidMoves(player i32) (valids [][2][2]i32) {
 }
 
 var playing bool
+var playerOneStuck bool
+var playerTwoStuck bool
 
 func PlayerTurn(player i32, capOnly bool, lastPos [2]i32) {
 	board.PrintBoard()
@@ -188,8 +293,26 @@ func PlayerTurn(player i32, capOnly bool, lastPos [2]i32) {
 
 	if len(valids) == 0 {
 		str.print("No moves for you, bad luck!")
+		if player == 1 {
+			playerOneStuck = true
+		} else {
+			playerTwoStuck = true
+		}
+		if playerOneStuck && playerTwoStuck {
+			str.print("It's a draw!")
+			playing = false
+			return
+		}
 
-	} 
+	} else {
+		if player == 1 {
+			playerOneStuck = false
+		} else {
+			playerTwoStuck = false
+		}
+	}
+
+
 	playing = false
 }
 
