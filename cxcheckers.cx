@@ -150,7 +150,32 @@ func ValidMoves(player i32) (valids [][2][2]i32) {
 	//valids [][2][2]i32
 	var vert [2]i32
 	vert = GetPossiblePos(player)
-	valids = append(valids, [2][2]i32{0, 0})
+	//valids = append(valids, [2][2]i32{0, 0})
+
+	for i := 0; i < 8; i++ {
+		for j := 0; j < 8; j++ {
+			if board.board[i][j] != player && board.board[i][j] != player+6 {
+				continue
+			}
+			var checkMoves [4][2]i32
+			checkMoves[0][0] = i + vert[0]
+			checkMoves[0][1] = j + 1
+			checkMoves[1][0] = i + vert[0]
+			checkMoves[1][1] = j - 1
+			checkMoves[2][0] = i + vert[1]
+			checkMoves[2][1] = j + 2
+			checkMoves[3][0] = i + vert[1]
+			checkMoves[3][1] = j - 2
+
+			for i := 0; i < 4; i++ {
+				valids = append(valids, [2][2]i32{0, 0})
+			}
+			
+			
+		}
+	}
+
+	
 }
 
 var playing bool
