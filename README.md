@@ -27,7 +27,8 @@ Have fun!
 2 | = | X | = | X | = | X | = | X |
 1 | X | = | X | = | X | = | X | = |
     A   B   C   D   E   F   G   H 
+No moves for you, bad luck!
 
-Game Over!
+Would you like to play again? (y/n)
 
 ```

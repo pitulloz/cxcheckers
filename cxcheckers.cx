@@ -312,6 +312,16 @@ func PlayerTurn(player i32, capOnly bool, lastPos [2]i32) {
 		}
 	}
 
+	var rep str
+	rep = "X"
+	if player == 2 {
+		rep = "O"
+	}
+
+	printf("Player %d (%s) move (ex: a3 b4): \n", player, rep)
+	text := read()
+	str.print("\n")
+
 
 	playing = false
 }
@@ -321,6 +331,8 @@ import "board"
 import "checkers"
 
 func main () {
+	checkers.playerOneStuck = false
+	checkers.playerTwoStuck = false
 	
 	var lp [2]i32
 
@@ -358,7 +370,13 @@ func main () {
 
 	end_play:
 
-	str.print("\nGame Over!\n")
+	//str.print("\nGame Over!\n")
+	str.print("\nWould you like to play again? (y/n)")
+	var reader str
+	reader = read()
+	if reader ==  "y" {
+		main()
+	}
 
 
 }
