@@ -43,3 +43,8 @@ b
     A   B   C   D   E   F   G   H 
 Player 2 (O) move (ex: a[enter]3[enter]b[enter]4[enter]): 
 ```
+
+reference:
+https://github.com/cdgriffith/go_checkers
+
+

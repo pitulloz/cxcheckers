@@ -120,6 +120,10 @@ func BoardAsString() (bs str) {
 				bs = bs + "O"
 			} else if board[i][j] == 3 {
 				bs = bs + " "
+			} else if board[i][j] == 7 {
+				bs = bs + "%"
+			} else if board[i][j] == 8 {
+				bs = bs + "0"
 			}
 
 		}
