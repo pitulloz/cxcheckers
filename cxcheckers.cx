@@ -220,17 +220,18 @@ func ValidMove(player i32, mov1 [2]i32, mov2 [2]i32, capOnly bool, noLog bool) (
 	//printf("starting board: %d, %d, %d\n", mov1[0], mov1[1], board.board[mov1[0]][mov1[1]])
 	if board.board[mov1[0]][mov1[1]] != player && board.board[mov1[0]][mov1[1]] != player+6 {
 		if !noLog {
-			printf("Starting posistion invalid %d", board.board[mov1[0]][mov1[1]])
-		}
-		return
-	}
-	if board.board[mov2[0]][mov2[1]] != 3 {
-		if !noLog {
-			printf("Moving posistion invalid &d", board.board[mov2[0]][mov2[1]])
+			printf("Starting posistion invalid %d\n", board.board[mov1[0]][mov1[1]])
 		}
 		return
 	}
 
+	//printf("board 2: %d\n", board.board[mov2[0]][mov2[1]])
+	if board.board[mov2[0]][mov2[1]] != 3 {
+		if !noLog {
+			printf("Moving posistion invalid %d\n", board.board[mov2[0]][mov2[1]])
+		}
+		return
+	}
 	
 	if CaptureChecks(player, mov1, mov2, capOnly, enemy, false) == true{
 		//printf("CaptureChecks\n")
@@ -470,7 +471,7 @@ func PlayerTurn(player i32, capOnly bool, lastPos [2]i32) {
 				printf("\nCongraulations Player %d, you've won!\n", player)
 				return
 			}
-			printf("Captured!")
+			printf("Captured!\n")
 
 			var vert [2]i32
 			vert = GetPossiblePos(player)
@@ -486,10 +487,10 @@ func PlayerTurn(player i32, capOnly bool, lastPos [2]i32) {
 				checkMoves[3][1] = mov2[1] - 2
 
 			if ValidMove(player, mov2, checkMoves[0], true, true) || ValidMove(player, mov2, checkMoves[1], true, true) {
-				printf("Anoter capture possible, please go again")
+				printf("Anoter capture possible, please go again\n")
 				PlayerTurn(player, true, mov2)
 			} else if king && (ValidMove(player, mov2, checkMoves[2], true, true) || ValidMove(player, mov2, checkMoves[3], true, true)) {
-				printf("Anoter capture possible, please go again")
+				printf("Anoter capture possible, please go again\n")
 				PlayerTurn(player, true, mov2)
 			}
 		}
