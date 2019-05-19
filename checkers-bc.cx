@@ -1,0 +1,57 @@
+package bc
+
+var matrix [10][10]i32
+
+var game_id[]str
+var game_steps[][]i32
+
+func newGame(id str) (pos i32){
+	game_id = append(game_id, id)
+	pos = len(game_id)-1
+}
+
+func initMatrix() {
+	for y := 0; y < 10; y++ {
+		for x := 0; x < 10; x++ {
+			matrix[x][y] = 1
+		}
+	}
+}
+
+func PrintMatrix() {
+	for i := 0; i < 10; i++ {
+		for j := 0; j < 10; j++ {
+			printf("%d", matrix[i][j])
+		}
+		printf("\n")
+	}
+}
+
+func FlipBit(x i32, y i32) {
+	if matrix[x][y] == 1 {
+		matrix[x][y] = 0
+	}
+	//IW: Missing an else branch here?
+	//IW: Why not call PrintMatrix instead of using inline code?
+	for i := 0; i < 10; i++ {
+		for j := 0; j < 10; j++ {
+			printf("%d", matrix[i][j])
+		}
+		printf("\n")
+	}
+}
+
+package main
+import "bc"
+
+func main() {
+	bc.initMatrix()
+
+	//tx
+	printf("New game created, id: %d\n", bc.newGame("g7890"))
+
+	bc.FlipBit(3, 4)
+	bc.PrintMatrix()
+
+	printf("New game created, id: %d\n", bc.newGame("g7890"))
+}
