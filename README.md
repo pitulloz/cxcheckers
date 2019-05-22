@@ -1,7 +1,7 @@
 # cxcheckers
 Checkers board game for Skycoin, programmed with CX Programming Language: https://www.skycoin.net/cx/
 
-tested using CX version 0.7.0beta
+tested using CX version 0.7 beta
 
 CX-Chain test:
 
@@ -53,7 +53,9 @@ Player 2 (O) move (ex: a[enter]3[enter]b[enter]4[enter]):
 ```
 
 reference:
+
 https://github.com/skycoin/cx/wiki/CX-Chains-Tutorial
+
 https://github.com/cdgriffith/go_checkers
 
 
