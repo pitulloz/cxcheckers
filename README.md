@@ -1,15 +1,23 @@
 # cxcheckers
-Checkers board game for Skycoin
+Checkers board game for Skycoin, programmed with CX Programming Language: https://www.skycoin.net/cx/
 
-tested using CX version 0.6.2
+tested using CX version 0.7.0beta
 
-```
-cx cxcheckers.cx
-```
-
-result
+CX-Chain test:
 
 ```
+cx checkers-bc.cx
+test1: New game g7890 created, id: 0
+test2: error new game g7890, aleady exist!
+test3: New game g7891 created, id: 1
+test4: Join game g7891 success, id: 1
+test5: error join game g7892, not exist!
+```
+
+Interactive (Keyboard input) game without bc feature:
+
+```
+cx checkers-interactive.cx
 Welcome to CX Checkers!
 
 You play by specifying which piece to move, and the position to move it too
@@ -45,6 +53,7 @@ Player 2 (O) move (ex: a[enter]3[enter]b[enter]4[enter]):
 ```
 
 reference:
+https://github.com/skycoin/cx/wiki/CX-Chains-Tutorial
 https://github.com/cdgriffith/go_checkers
 
 

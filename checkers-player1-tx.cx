@@ -1,7 +1,0 @@
-package main
-import "bc"
-
-func main() {
-	bc.FlipBit(3, 4)
-	bc.PrintMatrix()
-}

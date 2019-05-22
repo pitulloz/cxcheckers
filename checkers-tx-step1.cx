@@ -1,0 +1,9 @@
+package main
+import "bc"
+
+func main() {
+	//printf("New game created, id: %d\n", bc.newGame("g7890"))
+	bc.FlipBit(3, 4)
+	bc.PrintMatrix()
+	//printf("New game created, id: %d\n", bc.newGame("g7890"))
+}

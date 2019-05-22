@@ -4,54 +4,83 @@ var matrix [10][10]i32
 
 var game_id[]str
 var game_steps[][]i32
+var lastgame i32
 
 func newGame(id str) (pos i32){
-	game_id = append(game_id, id)
-	pos = len(game_id)-1
+	var jp i32
+	jp = joinGame(id)
+	if jp == -1 {
+		game_id = append(game_id, id)
+		lastgame = len(game_id)-1
+		pos = lastgame
+	} else {
+		pos = -1
+	}
+	
 }
 
-func initMatrix() {
-	for y := 0; y < 10; y++ {
-		for x := 0; x < 10; x++ {
-			matrix[x][y] = 1
+func joinGame(id str) (pos i32){
+	pos = -1
+	for x := 0; x <= lastgame; x++ {
+		if game_id[x] == id {
+			pos = x
+			return
 		}
 	}
 }
 
-func PrintMatrix() {
-	for i := 0; i < 10; i++ {
-		for j := 0; j < 10; j++ {
-			printf("%d", matrix[i][j])
-		}
-		printf("\n")
-	}
-}
-
-func FlipBit(x i32, y i32) {
-	if matrix[x][y] == 1 {
-		matrix[x][y] = 0
-	}
-	//IW: Missing an else branch here?
-	//IW: Why not call PrintMatrix instead of using inline code?
-	for i := 0; i < 10; i++ {
-		for j := 0; j < 10; j++ {
-			printf("%d", matrix[i][j])
-		}
-		printf("\n")
-	}
-}
 
 package main
 import "bc"
 
 func main() {
-	bc.initMatrix()
+
+	bc.lastgame=-1
 
 	//tx
-	printf("New game created, id: %d\n", bc.newGame("g7890"))
 
-	bc.FlipBit(3, 4)
-	bc.PrintMatrix()
+	//test1
+	var new1 i32
+	new1 = bc.newGame("g7890")
+	if new1 == -1 {
+		printf("test1: error new game g7890, aleady exist!\n")
+	} else {
+		printf("test1: New game g7890 created, id: %d\n", new1)
+	}
 
-	printf("New game created, id: %d\n", bc.newGame("g7890"))
+	//test2
+	var new2 i32
+	new2 = bc.newGame("g7890")
+	if new2 == -1 {
+		printf("test2: error new game g7890, aleady exist!\n")
+	} else {
+		printf("test2: New game g7890 created, id: %d\n", new2)
+	}
+
+	//test3
+	new2 = bc.newGame("g7891")
+	if new2 == -1 {
+		printf("test3: error new game g7891, aleady exist!\n")
+	} else {
+		printf("test3: New game g7891 created, id: %d\n", new2)
+	}
+
+	//test4
+	var join1 i32
+	join1 = bc.joinGame("g7891")
+	if join1 == -1 {
+		printf("test4: error join game g7891, not exist!\n")
+	} else {
+		printf("test4: Join game g7891 success, id: %d\n", join1)
+	}
+
+	//test5
+	var join2 i32
+	join2 = bc.joinGame("g7892")
+	if join2 == -1 {
+		printf("test5: error join game g7892, not exist!\n")
+	} else {
+		printf("test5: Join game g7892 success, id: %d\n", join2)
+	}
+
 }
