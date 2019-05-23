@@ -1,7 +1,5 @@
 package bc
 
-var matrix [10][10]i32
-
 var game_id[]str
 var game_steps[][]i32
 var lastgame i32
@@ -27,6 +25,41 @@ func joinGame(id str) (pos i32){
 			return
 		}
 	}
+}
+
+func viewBoard(board [8][8]i32) (v str) {
+
+	var row [8]str
+	row = [8]str {"8","7","6","5","4","3","2","1"}
+	
+	v = ""
+
+	for i := 0; i < 8; i++ {
+		v = v + row[i]
+		for j := 0; j < 8; j++ {
+
+			v = v + " | "
+			if board[i][j] == 0 {
+				v = v + "="
+			} else if board[i][j] == 1 {
+				v = v + "X"
+			} else if board[i][j] == 2 {
+				v = v + "O"
+			} else if board[i][j] == 3 {
+				v = v + " "
+			} else if board[i][j] == 7 {
+				v = v + "%"
+			} else if board[i][j] == 8 {
+				v = v + "0"
+			}
+
+		}
+		v = v + " |\n"
+
+	}
+
+	v = v + "    A   B   C   D   E   F   G   H "
+
 }
 
 
@@ -82,5 +115,34 @@ func main() {
 	} else {
 		printf("test5: Join game g7892 success, id: %d\n", join2)
 	}
+
+	var tmprow [8]i32
+	var board [8][8]i32
+
+	tmprow = [8]i32 {0,2,0,2,0,2,0,2}
+	board[0] = tmprow
+
+	tmprow = [8]i32 {2,0,2,0,2,0,2,0}
+	board[1] = tmprow
+
+	tmprow = [8]i32 {0,2,0,2,0,2,0,2}
+	board[2] = tmprow
+
+	tmprow = [8]i32 {3,0,3,0,3,0,3,0}
+	board[3] = tmprow
+
+	tmprow = [8]i32 {0,3,0,3,0,3,0,3}
+	board[4] = tmprow
+
+	tmprow = [8]i32 {1,0,1,0,1,0,1,0}
+	board[5] = tmprow
+	
+	tmprow = [8]i32 {0,1,0,1,0,1,0,0}
+	board[6] = tmprow
+
+	tmprow = [8]i32 {1,0,1,0,1,0,1,0}
+	board[7] = tmprow
+
+	str.print(bc.viewBoard(board))
 
 }
