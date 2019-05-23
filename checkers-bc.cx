@@ -62,6 +62,180 @@ func viewBoard(board [8][8]i32) (v str) {
 
 }
 
+func OnBoard(vert i32, hoz i32) (ob bool) {
+	if vert > 7 || vert < 0 || hoz > 7 || hoz < 0 {
+		ob = false
+		return
+	}
+	ob = true
+}
+
+func EnemyOnBoard(player i32, board [8][8]i32) (e bool) {
+	var enemy i32
+	enemy = 2
+	if player == 2 {
+		enemy = 1
+	}
+
+	for i := 0; i < 8; i++ {
+		for j := 0; j < 8; j++ {
+			if board[i][j] == enemy || board[i][j] == enemy+6 {
+				e = true
+				return
+			}
+		}
+	}
+	e = false
+}
+
+func GetPossiblePos(player i32) (vert [2]i32) {
+	vert[0] = -1
+	if player == 2 {
+		vert[0] = 1
+	}
+	vert[1] = -2
+	if player == 2 {
+		vert[1] = 2
+	}
+}
+
+
+func ValidMove(player i32, mov1 [2]i32, mov2 [2]i32, capOnly bool, noLog bool, board [8][8]i32) (valid bool) {
+	valid = false
+
+	if OnBoard(mov1[0], mov1[1]) == false || OnBoard(mov2[0], mov2[1]) == false {
+		return
+	}
+
+	var enemy i32
+	enemy = 2
+	if player == 2 {
+		enemy = 1
+	}
+
+	//printf("starting board: %d, %d, %d\n", mov1[0], mov1[1], board[mov1[0]][mov1[1]])
+	if board[mov1[0]][mov1[1]] != player && board[mov1[0]][mov1[1]] != player+6 {
+		if !noLog {
+			printf("Starting posistion invalid %d\n", board[mov1[0]][mov1[1]])
+		}
+		return
+	}
+
+	//printf("board 2: %d\n", board[mov2[0]][mov2[1]])
+	if board[mov2[0]][mov2[1]] != 3 {
+		if !noLog {
+			printf("Moving posistion invalid %d\n", board[mov2[0]][mov2[1]])
+		}
+		return
+	}
+	
+	if CaptureChecks(player, mov1, mov2, capOnly, enemy, false, board) == true{
+		//printf("CaptureChecks\n")
+		valid = true
+	} else if board[mov1[0]][mov1[1]] == player+6 && CaptureChecks(player, mov1, mov2, capOnly, enemy, true, board) == true{
+		valid = true
+	}
+	
+}
+
+
+func CaptureChecks(player i32, mov1 [2]i32, mov2 [2]i32, capOnly bool, enemy i32, kingFlip bool, board [8][8]i32) (cc bool) {
+	cc = false
+
+	var hoz i32
+	hoz = mov1[1] - mov2[1]
+	var vert [2]i32
+
+	vert = GetPossiblePos(player)
+	if kingFlip {
+		vert[0] = -vert[0]
+		vert[1] = -vert[1]
+	}
+
+	var abshoz i32
+	abshoz = 0
+	if hoz == 1 || hoz == -1 {
+		abshoz = 1
+	}
+
+
+	if mov2[0]-mov1[0] == vert[0] && abshoz == 1 && !capOnly {
+
+		//printf("true: %d\n", abshoz)
+		cc = true
+		return
+	}
+
+	if mov2[0]-mov1[0] == vert[1] {
+		if hoz == -2 && OnBoard(mov1[0]+vert[0], mov1[1]+1) {
+			if board[mov1[0]+vert][mov1[1]+1] == enemy || board[mov1[0]+vert[0]][mov1[1]+1] == enemy+6 {
+				cc = true
+				return
+			}
+		} else if hoz == 2 && OnBoard(mov1[0]+vert[0], mov1[1]-1) {
+			if board[mov1[0]+vert[0]][mov1[1]-1] == enemy || board[mov1[0]+vert[0]][mov1[1]-1] == enemy+6 {
+				cc = true
+				return
+			}
+		}
+	}
+}
+
+
+func ValidMoves(player i32, board [8][8]i32) (valids [][2][2]i32) {
+	var vert [2]i32
+	vert = GetPossiblePos(player)
+
+	for i := 0; i < 8; i++ {
+		for j := 0; j < 8; j++ {
+			
+
+			if board[i][j] != player && board[i][j] != player+6 {
+			//if board[i][j] != player {
+				//continue	-> BUG: continue exit to root level for loop
+			} else {
+				var checkMoves [4][2]i32
+				checkMoves[0][0] = i + vert[0]
+				checkMoves[0][1] = j + 1
+				checkMoves[1][0] = i + vert[0]
+				checkMoves[1][1] = j - 1
+				checkMoves[2][0] = i + vert[1]
+				checkMoves[2][1] = j + 2
+				checkMoves[3][0] = i + vert[1]
+				checkMoves[3][1] = j - 2
+
+				var currentPos [2]i32
+				currentPos = [2]i32{i, j}
+
+				for i := 0; i < 4; i++ {
+					//printf("currentPos: %d, %d. move: %d, %d.\n", currentPos[0], currentPos[1], checkMoves[i][0], checkMoves[i][1])
+					if ValidMove(player, currentPos, checkMoves[i], false, true, board) {
+						//printf("valids1\n")					
+						valids = append(valids, [2][2]i32{currentPos, checkMoves[i]})
+					}
+				}
+
+				if board[i][j] == player+6 {
+					var kingMoves [4][2]i32
+					checkMoves[0][0] = i - vert[0]
+					checkMoves[0][1] = j + 1
+					checkMoves[1][0] = i - vert[0]
+					checkMoves[1][1] = j - 1
+					checkMoves[2][0] = i - vert[1]
+					checkMoves[2][1] = j + 2
+					checkMoves[3][0] = i - vert[1]
+					checkMoves[3][1] = j - 2
+					for i := 0; i < 4; i++ {
+						if ValidMove(player, currentPos, kingMoves[i], false, true, board) {
+							valids = append(valids, [2][2]i32{currentPos, checkMoves[i]})
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 
 package main
 import "bc"
