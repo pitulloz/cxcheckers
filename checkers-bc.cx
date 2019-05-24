@@ -1,7 +1,7 @@
 package bc
 
 var game_id[]str
-var game_steps[][]i32
+var game_steps[][5]i32
 var lastgame i32
 
 func newGame(id str) (pos i32){
@@ -25,6 +25,15 @@ func joinGame(id str) (pos i32){
 			return
 		}
 	}
+}
+
+// step[0] => player id (1 or 2)
+// step[1] and step[2] => source x and y
+// step[3] and step[4] => destination x and y
+
+func saveStep(game str, step [5]i32) {
+
+	
 }
 
 func viewBoard(board [8][8]i32) (v str) {
@@ -237,6 +246,49 @@ func ValidMoves(player i32, board [8][8]i32) (valids [][2][2]i32) {
 }
 
 
+func NewBoard() (board [8][8]i32) {
+	var tmprow [8]i32
+
+	tmprow = [8]i32 {0,2,0,2,0,2,0,2}
+	board[0] = tmprow
+
+	tmprow = [8]i32 {2,0,2,0,2,0,2,0}
+	board[1] = tmprow
+
+	tmprow = [8]i32 {0,2,0,2,0,2,0,2}
+	board[2] = tmprow
+
+	tmprow = [8]i32 {3,0,3,0,3,0,3,0}
+	board[3] = tmprow
+
+	tmprow = [8]i32 {0,3,0,3,0,3,0,3}
+	board[4] = tmprow
+
+	tmprow = [8]i32 {1,0,1,0,1,0,1,0}
+	board[5] = tmprow
+	
+	tmprow = [8]i32 {0,1,0,1,0,1,0,0}
+	board[6] = tmprow
+
+	tmprow = [8]i32 {1,0,1,0,1,0,1,0}
+	board[7] = tmprow
+}
+
+
+func PlayerTurn(game str, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i32) (msg str){
+	var playing bool
+	var playerOneStuck bool
+	var playerTwoStuck bool
+
+	playerOneStuck = false
+	playerTwoStuck = false
+	playing = true
+
+	var lp [2]i32
+	lp = [2]i32 {0,0}
+}
+
+
 package main
 import "bc"
 
@@ -246,6 +298,7 @@ func main() {
 
 	//tx
 
+	/*
 	//test1
 	var new1 i32
 	new1 = bc.newGame("g7890")
@@ -289,34 +342,69 @@ func main() {
 	} else {
 		printf("test5: Join game g7892 success, id: %d\n", join2)
 	}
+	*/
 
-	var tmprow [8]i32
+
+
 	var board [8][8]i32
+	var gameID str
+	var game1 i32
+	var ng i32
+	var tmov1 [2]str
+	var tmov2 [2]str
+	var msg str
 
-	tmprow = [8]i32 {0,2,0,2,0,2,0,2}
-	board[0] = tmprow
+	board = bc.NewBoard()
 
-	tmprow = [8]i32 {2,0,2,0,2,0,2,0}
-	board[1] = tmprow
 
-	tmprow = [8]i32 {0,2,0,2,0,2,0,2}
-	board[2] = tmprow
 
-	tmprow = [8]i32 {3,0,3,0,3,0,3,0}
-	board[3] = tmprow
-
-	tmprow = [8]i32 {0,3,0,3,0,3,0,3}
-	board[4] = tmprow
-
-	tmprow = [8]i32 {1,0,1,0,1,0,1,0}
-	board[5] = tmprow
+	// ==== step0
 	
-	tmprow = [8]i32 {0,1,0,1,0,1,0,0}
-	board[6] = tmprow
+	str.print(bc.viewBoard(board))
 
-	tmprow = [8]i32 {1,0,1,0,1,0,1,0}
-	board[7] = tmprow
+	gameID = "G-001"
+	ng = bc.newGame(gameID)
+
+
+
+	// ==== step1
+
+	gameID = "G-001"
+	game1 = bc.joinGame(gameID)
+	
+	tmov1[0] = "i"
+	tmov1[1] = "3"
+	tmov2[0] = "b"
+	tmov2[1] = "4"
+
+	str.print(bc.PlayerTurn(gameID, 1, tmov1, tmov2, board))
 
 	str.print(bc.viewBoard(board))
+
+
+
+	// ==== step2
+
+	gameID = "G-001"
+	game1 = bc.joinGame(gameID)
+	
+	tmov1[0] = "d"
+	tmov1[1] = "6"
+	tmov2[0] = "c"
+	tmov2[1] = "5"
+
+	str.print(bc.PlayerTurn(gameID, 2, tmov1, tmov2, board))
+
+	str.print(bc.viewBoard(board))
+
+
+
+
+	
+	
+
+
+
+
 
 }
