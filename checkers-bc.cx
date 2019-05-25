@@ -28,17 +28,24 @@ func joinGame(id str) (pos i32){
 }
 
 //slice sequence format for steps
-// step[0] => player 1
+// step[0] => header: step count
+// step1:
 // step[1] and step[2] => player 1: source x and y
 // step[3] and step[4] => player 1: destination x and y
-// step[5] => player 2
-// step[6] and step[7] => player 2: source x and y
-// step[8] and step[9] => player 2: destination x and y
+// step2:
+// step[5] and step[6] => player 2: source x and y
+// step[7] and step[8] => player 2: destination x and y
+// step3:
+// step[9] and step[10] => player 1: source x and y
+// step[11] and step[12] => player 1: destination x and y
 
 
-func saveStep(game str, player i32, tmov1 [2]str, tmov2 [2]str) {
-
-	
+func saveStep(game i32, player i32, count i32, mov1 [2]i32, mov2 [2]i32) {
+	game_steps[game][0] = count
+	game_steps[game][1] = mov1[0]
+	game_steps[game][2] = mov1[0]
+	game_steps[game][3] = mov2[1]
+	game_steps[game][4] = mov2[1]
 }
 
 func loadSteps(game str, board [8][8]i32) (board [8][8]i32) {
@@ -311,7 +318,7 @@ func NewBoard() (board [8][8]i32) {
 }
 
 
-func PlayerTurn(game str, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i32) (msg str){
+func PlayerTurn(game i32, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i32) (newBoard [8][8]i32){
 	var playing bool
 	var playerOneStuck bool
 	var playerTwoStuck bool
@@ -356,7 +363,7 @@ func PlayerTurn(game str, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i3
 		rep = "O"
 	}
 
-	printf("Player %d (%s) move (source: %d%d, destination: %d%d\n", player, rep, tmov1[0], tmov1[1], tmov2[0], tmov2[1])
+	printf("Player %d (%s) move (source: %s %s, destination: %s %s\n", player, rep, tmov1[0], tmov1[1], tmov2[0], tmov2[1])
 
 	var enemy i32
 	var mov1 [2]i32
@@ -370,7 +377,7 @@ func PlayerTurn(game str, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i3
 		return
 	}
 
-if ValidMove(player, mov1, mov2, capOnly, false, board) {
+	if ValidMove(player, mov1, mov2, capOnly, false, board) {
 		var king bool
 		king = false
 		if board[mov1[0]][mov1[1]] == player+6 {
@@ -434,7 +441,23 @@ if ValidMove(player, mov1, mov2, capOnly, false, board) {
 		str.print("INVALID MOVE!")
 		//PlayerTurn(player, capOnly, lastPos)
 		return
-	}	
+	}
+
+	newBoard = board
+
+	var scount i32
+	scount = 1
+	//saveStep(game, player, c, mov1 [2]i32, mov2 [2]i32)
+
+	var turnstep[]i32
+	
+	turnstep = append(turnstep,  scount)
+	turnstep = append(turnstep,  mov1[0])
+	turnstep = append(turnstep,  mov1[1])
+	turnstep = append(turnstep,  mov2[0])
+	turnstep = append(turnstep,  mov2[1])
+
+	game_steps = append(game_steps, turnstep)
 
 }
 
@@ -522,17 +545,17 @@ func main() {
 	gameID = "G-001"
 	game1 = bc.joinGame(gameID)
 	
-	tmov1[0] = "i"
+	tmov1[0] = "a"
 	tmov1[1] = "3"
 	tmov2[0] = "b"
 	tmov2[1] = "4"
 
-	str.print(bc.PlayerTurn(gameID, 1, tmov1, tmov2, board))
+	board = bc.PlayerTurn(game1, 1, tmov1, tmov2, board)
 
 	str.print(bc.viewBoard(board))
 
 
-
+	/*
 	// ==== step2
 
 	gameID = "G-001"
@@ -546,15 +569,6 @@ func main() {
 	str.print(bc.PlayerTurn(gameID, 2, tmov1, tmov2, board))
 
 	str.print(bc.viewBoard(board))
-
-
-
-
-	
-	
-
-
-
-
+	*/
 
 }
