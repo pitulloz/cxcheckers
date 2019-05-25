@@ -89,6 +89,32 @@ func OnBoard(vert i32, hoz i32) (ob bool) {
 	ob = true
 }
 
+func PosToBoard(a [2]str) (mov [2]i32) {
+
+	// invalid move
+	mov[0] = 8
+	mov[1] = 8
+
+	var hoz [8]str
+	hoz = [8]str {"a","b","c","d","e","f","g","h"}
+	for i := 0; i < 8; i++ {
+		if hoz[i] == a[0] {
+			mov[1] = i
+		}
+
+	}
+
+	var vert [8]str
+	vert = [8]str {"8","7","6","5","4","3","2","1"}
+	for i := 0; i < 8; i++ {
+		if vert[i] == a[1] {
+			mov[0] = i
+		}
+
+	}
+
+}
+
 func EnemyOnBoard(player i32, board [8][8]i32) (e bool) {
 	var enemy i32
 	enemy = 2
@@ -296,6 +322,120 @@ func PlayerTurn(game str, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i3
 
 	var lp [2]i32
 	lp = [2]i32 {0,0}
+
+	var capOnly bool
+	capOnly = false
+
+	var valids [][2][2]i32
+	valids = ValidMoves(player, board)
+	
+	if len(valids) == 0 {
+		str.print("No moves for you, bad luck!")
+		if player == 1 {
+			playerOneStuck = true
+		} else {
+			playerTwoStuck = true
+		}
+		if playerOneStuck && playerTwoStuck {
+			str.print("It's a draw!")
+			playing = false
+			return
+		}
+
+	} else {
+		if player == 1 {
+			playerOneStuck = false
+		} else {
+			playerTwoStuck = false
+		}
+	}
+
+	var rep str
+	rep = "X"
+	if player == 2 {
+		rep = "O"
+	}
+
+	printf("Player %d (%s) move (source: %d%d, destination: %d%d\n", player, rep, tmov1[0], tmov1[1], tmov2[0], tmov2[1])
+
+	var enemy i32
+	var mov1 [2]i32
+	var mov2 [2]i32
+	mov1 = PosToBoard(tmov1)
+	mov2 = PosToBoard(tmov2)
+
+	if mov1[0] == 8 || mov1[1] == 8 || mov2[0] == 8 || mov2[1] == 8 {
+		str.print("Bad input, expected [a-h][1-8] [a-h][1-8]")
+		//PlayerTurn(player, capOnly, lastPos)
+		return
+	}
+
+if ValidMove(player, mov1, mov2, capOnly, false, board) {
+		var king bool
+		king = false
+		if board[mov1[0]][mov1[1]] == player+6 {
+			king = true
+		} else if (player == 1 && mov2[0] == 0) || (player == 2 && mov2[0] == 7) {
+			king = true
+			str.print("King me!")
+		}
+
+		board[mov1[0]][mov1[1]] = 3
+		if king {
+			board[mov2[0]][mov2[1]] = player + 6
+		} else {
+			board[mov2[0]][mov2[1]] = player
+		}
+
+		var absmov i32
+		absmov = mov2[0]-mov1[0]
+		if absmov == -2 {
+			absmov = 2
+		}
+		
+		if absmov == 2 {
+			var l i32
+			var h i32
+			l = (mov1[0] + mov2[0]) / 2
+			h = (mov1[1] + mov2[1]) / 2
+			board[l][h] = 3
+			if EnemyOnBoard(player, board) == false {
+				playing = false
+				//PrintBoard()
+				printf("\nCongraulations Player %d, you've won!\n", player)
+				return
+			}
+			printf("Captured!\n")
+
+			var vert [2]i32
+			vert = GetPossiblePos(player)
+
+			var checkMoves [4][2]i32
+				checkMoves[0][0] = mov2[0] + vert[1]
+				checkMoves[0][1] = mov2[1] + 2
+				checkMoves[1][0] = mov2[0] + vert[1]
+				checkMoves[1][1] = mov2[1] - 2
+				checkMoves[2][0] = mov2[0] - vert[1]
+				checkMoves[2][1] = mov2[1] + 2
+				checkMoves[3][0] = mov2[0] - vert[1]
+				checkMoves[3][1] = mov2[1] - 2
+
+			if ValidMove(player, mov2, checkMoves[0], true, true, board) || ValidMove(player, mov2, checkMoves[1], true, true, board) {
+				printf("Anoter capture possible, please go again\n")
+				//PlayerTurn(player, true, mov2)
+			} else if king && (ValidMove(player, mov2, checkMoves[2], true, true, board) || ValidMove(player, mov2, checkMoves[3], true, true, board)) {
+				printf("Anoter capture possible, please go again\n")
+				//PlayerTurn(player, true, mov2)
+			}
+		}
+		
+
+	} else {
+		str.print("INVALID MOVE!")
+		//PlayerTurn(player, capOnly, lastPos)
+		return
+	}	
+
 }
 
 
