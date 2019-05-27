@@ -1,14 +1,17 @@
 package bc
 
-var game_id[]str
-var game_steps[][]i32
-var lastgame i32
+// global variable for blockchain
+var game_id[]str		//game id (int auto number)
+var game_sc[]i32		//steps count for game id
+var game_steps[][]i32		//game steps sequence for game id
+var lastgame i32		//last game id
 
 func newGame(id str) (pos i32){
 	var jp i32
 	jp = joinGame(id)
 	if jp == -1 {
 		game_id = append(game_id, id)
+		game_sc = append(game_sc,  0)
 		lastgame = len(game_id)-1
 		pos = lastgame
 	} else {
@@ -25,32 +28,6 @@ func joinGame(id str) (pos i32){
 			return
 		}
 	}
-}
-
-//slice sequence format for steps
-// step[0] => header: step count
-// step1:
-// step[1] and step[2] => player 1: source x and y
-// step[3] and step[4] => player 1: destination x and y
-// step2:
-// step[5] and step[6] => player 2: source x and y
-// step[7] and step[8] => player 2: destination x and y
-// step3:
-// step[9] and step[10] => player 1: source x and y
-// step[11] and step[12] => player 1: destination x and y
-
-
-func saveStep(game i32, player i32, count i32, mov1 [2]i32, mov2 [2]i32) {
-	game_steps[game][0] = count
-	game_steps[game][1] = mov1[0]
-	game_steps[game][2] = mov1[0]
-	game_steps[game][3] = mov2[1]
-	game_steps[game][4] = mov2[1]
-}
-
-func loadSteps(game str, board [8][8]i32) (board [8][8]i32) {
-
-	
 }
 
 func viewBoard(board [8][8]i32) (v str) {
@@ -165,7 +142,6 @@ func ValidMove(player i32, mov1 [2]i32, mov2 [2]i32, capOnly bool, noLog bool, b
 		enemy = 1
 	}
 
-	//printf("starting board: %d, %d, %d\n", mov1[0], mov1[1], board[mov1[0]][mov1[1]])
 	if board[mov1[0]][mov1[1]] != player && board[mov1[0]][mov1[1]] != player+6 {
 		if !noLog {
 			printf("Starting posistion invalid %d\n", board[mov1[0]][mov1[1]])
@@ -173,7 +149,6 @@ func ValidMove(player i32, mov1 [2]i32, mov2 [2]i32, capOnly bool, noLog bool, b
 		return
 	}
 
-	//printf("board 2: %d\n", board[mov2[0]][mov2[1]])
 	if board[mov2[0]][mov2[1]] != 3 {
 		if !noLog {
 			printf("Moving posistion invalid %d\n", board[mov2[0]][mov2[1]])
@@ -182,7 +157,6 @@ func ValidMove(player i32, mov1 [2]i32, mov2 [2]i32, capOnly bool, noLog bool, b
 	}
 	
 	if CaptureChecks(player, mov1, mov2, capOnly, enemy, false, board) == true{
-		//printf("CaptureChecks\n")
 		valid = true
 	} else if board[mov1[0]][mov1[1]] == player+6 && CaptureChecks(player, mov1, mov2, capOnly, enemy, true, board) == true{
 		valid = true
@@ -260,9 +234,8 @@ func ValidMoves(player i32, board [8][8]i32) (valids [][2][2]i32) {
 				currentPos = [2]i32{i, j}
 
 				for i := 0; i < 4; i++ {
-					//printf("currentPos: %d, %d. move: %d, %d.\n", currentPos[0], currentPos[1], checkMoves[i][0], checkMoves[i][1])
+					
 					if ValidMove(player, currentPos, checkMoves[i], false, true, board) {
-						//printf("valids1\n")					
 						valids = append(valids, [2][2]i32{currentPos, checkMoves[i]})
 					}
 				}
@@ -322,142 +295,207 @@ func PlayerTurn(game i32, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i3
 	var playing bool
 	var playerOneStuck bool
 	var playerTwoStuck bool
-
-	playerOneStuck = false
-	playerTwoStuck = false
-	playing = true
-
 	var lp [2]i32
-	lp = [2]i32 {0,0}
-
 	var capOnly bool
-	capOnly = false
-
 	var valids [][2][2]i32
-	valids = ValidMoves(player, board)
-	
-	if len(valids) == 0 {
-		str.print("No moves for you, bad luck!")
-		if player == 1 {
-			playerOneStuck = true
-		} else {
-			playerTwoStuck = true
-		}
-		if playerOneStuck && playerTwoStuck {
-			str.print("It's a draw!")
-			playing = false
-			return
-		}
+	var scount i32
 
-	} else {
-		if player == 1 {
-			playerOneStuck = false
-		} else {
-			playerTwoStuck = false
-		}
-	}
+	scount = game_sc[game]
+	//printf("scount: %d\n", scount)
 
-	var rep str
-	rep = "X"
-	if player == 2 {
-		rep = "O"
-	}
+	var newstep bool
+	newstep = false
 
-	printf("Player %d (%s) move (source: %s %s, destination: %s %s\n", player, rep, tmov1[0], tmov1[1], tmov2[0], tmov2[1])
+	var allsteps[]i32
 
-	var enemy i32
-	var mov1 [2]i32
-	var mov2 [2]i32
-	mov1 = PosToBoard(tmov1)
-	mov2 = PosToBoard(tmov2)
+	for i := 0; i <= scount; i++ {
+		player = mod(i, 2) + 1
 
-	if mov1[0] == 8 || mov1[1] == 8 || mov2[0] == 8 || mov2[1] == 8 {
-		str.print("Bad input, expected [a-h][1-8] [a-h][1-8]")
-		//PlayerTurn(player, capOnly, lastPos)
-		return
-	}
-
-	if ValidMove(player, mov1, mov2, capOnly, false, board) {
-		var king bool
-		king = false
-		if board[mov1[0]][mov1[1]] == player+6 {
-			king = true
-		} else if (player == 1 && mov2[0] == 0) || (player == 2 && mov2[0] == 7) {
-			king = true
-			str.print("King me!")
+		if i == scount {
+			newstep = true
 		}
 
-		board[mov1[0]][mov1[1]] = 3
-		if king {
-			board[mov2[0]][mov2[1]] = player + 6
-		} else {
-			board[mov2[0]][mov2[1]] = player
-		}
+		playerOneStuck = false
+		playerTwoStuck = false
+		playing = true
+		lp = [2]i32 {0,0}
+		capOnly = false
 
-		var absmov i32
-		absmov = mov2[0]-mov1[0]
-		if absmov == -2 {
-			absmov = 2
-		}
+		valids = ValidMoves(player, board)
 		
-		if absmov == 2 {
-			var l i32
-			var h i32
-			l = (mov1[0] + mov2[0]) / 2
-			h = (mov1[1] + mov2[1]) / 2
-			board[l][h] = 3
-			if EnemyOnBoard(player, board) == false {
+		if len(valids) == 0 {
+			if newstep {
+				str.print("No moves for you, bad luck!")
+			}
+			if player == 1 {
+				playerOneStuck = true
+			} else {
+				playerTwoStuck = true
+			}
+			if playerOneStuck && playerTwoStuck {
 				playing = false
-				//PrintBoard()
-				printf("\nCongraulations Player %d, you've won!\n", player)
+				if newstep {
+					str.print("It's a draw!")			
+					return
+				}
+			}
+
+		} else {
+			if player == 1 {
+				playerOneStuck = false
+			} else {
+				playerTwoStuck = false
+			}
+		}
+
+		var rep str
+		rep = "X"
+		if player == 2 {
+			rep = "O"
+		}
+
+		if newstep {
+			printf("Player %d (%s) move (source: %s %s, destination: %s %s\n", player, rep, tmov1[0], tmov1[1], tmov2[0], tmov2[1])
+		}
+
+		var enemy i32
+		var mov1 [2]i32
+		var mov2 [2]i32
+		if newstep {
+			mov1 = PosToBoard(tmov1)
+			mov2 = PosToBoard(tmov2)
+		} else {
+			//printf("step:%d\n", i*4+1)
+			mov1[0] = game_steps[game][i*4]
+			mov1[1] = game_steps[game][i*4+1]
+			mov2[0] = game_steps[game][i*4+2]
+			mov2[1] = game_steps[game][i*4+3]
+		}
+
+		//reconstruction player steps
+		allsteps = append(allsteps,  mov1[0])
+		allsteps = append(allsteps,  mov1[1])
+		allsteps = append(allsteps,  mov2[0])
+		allsteps = append(allsteps,  mov2[1])
+
+		if mov1[0] == 8 || mov1[1] == 8 || mov2[0] == 8 || mov2[1] == 8 {
+			if newstep {
+				str.print("Bad input, expected [a-h][1-8] [a-h][1-8]")
 				return
 			}
-			printf("Captured!\n")
+		}
 
-			var vert [2]i32
-			vert = GetPossiblePos(player)
+		if ValidMove(player, mov1, mov2, capOnly, false, board) {
+			var king bool
+			king = false
+			if board[mov1[0]][mov1[1]] == player+6 {
+				king = true
+			} else if (player == 1 && mov2[0] == 0) || (player == 2 && mov2[0] == 7) {
+				king = true
+				if newstep {
+					str.print("King me!")
+				}
+			}
 
-			var checkMoves [4][2]i32
-				checkMoves[0][0] = mov2[0] + vert[1]
-				checkMoves[0][1] = mov2[1] + 2
-				checkMoves[1][0] = mov2[0] + vert[1]
-				checkMoves[1][1] = mov2[1] - 2
-				checkMoves[2][0] = mov2[0] - vert[1]
-				checkMoves[2][1] = mov2[1] + 2
-				checkMoves[3][0] = mov2[0] - vert[1]
-				checkMoves[3][1] = mov2[1] - 2
+			board[mov1[0]][mov1[1]] = 3
+			if king {
+				board[mov2[0]][mov2[1]] = player + 6
+			} else {
+				board[mov2[0]][mov2[1]] = player
+			}
 
-			if ValidMove(player, mov2, checkMoves[0], true, true, board) || ValidMove(player, mov2, checkMoves[1], true, true, board) {
-				printf("Anoter capture possible, please go again\n")
-				//PlayerTurn(player, true, mov2)
-			} else if king && (ValidMove(player, mov2, checkMoves[2], true, true, board) || ValidMove(player, mov2, checkMoves[3], true, true, board)) {
-				printf("Anoter capture possible, please go again\n")
-				//PlayerTurn(player, true, mov2)
+			var absmov i32
+			absmov = mov2[0]-mov1[0]
+			if absmov == -2 {
+				absmov = 2
+			}
+			
+			if absmov == 2 {
+				var l i32
+				var h i32
+				l = (mov1[0] + mov2[0]) / 2
+				h = (mov1[1] + mov2[1]) / 2
+				board[l][h] = 3
+				if EnemyOnBoard(player, board) == false {
+					playing = false
+					if newstep {
+						printf("\nCongraulations Player %d, you've won!\n", player)
+						return
+					}
+				}
+				if newstep {
+					printf("Captured!\n")
+				}
+
+				var vert [2]i32
+				vert = GetPossiblePos(player)
+
+				var checkMoves [4][2]i32
+					checkMoves[0][0] = mov2[0] + vert[1]
+					checkMoves[0][1] = mov2[1] + 2
+					checkMoves[1][0] = mov2[0] + vert[1]
+					checkMoves[1][1] = mov2[1] - 2
+					checkMoves[2][0] = mov2[0] - vert[1]
+					checkMoves[2][1] = mov2[1] + 2
+					checkMoves[3][0] = mov2[0] - vert[1]
+					checkMoves[3][1] = mov2[1] - 2
+
+				if ValidMove(player, mov2, checkMoves[0], true, true, board) || 
+				  ValidMove(player, mov2, checkMoves[1], true, true, board) {
+					if newstep {
+						printf("Anoter capture possible, please go again\n")
+					}
+				} else if king && (ValidMove(player, mov2, checkMoves[2], true, true, board) || 
+				  ValidMove(player, mov2, checkMoves[3], true, true, board)) {
+					if newstep {
+						printf("Anoter capture possible, please go again\n")
+					}
+				}
+			}
+			
+
+		} else {
+			if newstep {
+				str.print("INVALID MOVE!")
+				return
 			}
 		}
-		
 
-	} else {
-		str.print("INVALID MOVE!")
-		//PlayerTurn(player, capOnly, lastPos)
-		return
+		if newstep {
+
+			/*
+			slice sequence format for steps
+			game_sc[game] => step count
+			step1:
+			step[0] and step[1] => player 1: source x and y
+			step[2] and step[3] => player 1: destination x and y
+			step2:
+			step[4] and step[5] => player 2: source x and y
+			step[6] and step[7] => player 2: destination x and y
+			step3:
+			step[8] and step[9] => player 1: source x and y
+			step[10] and step[11] => player 1: destination x and y
+			*/			
+
+			if i == 0 {
+				var turnstep[]i32
+				turnstep = append(turnstep,  mov1[0])
+				turnstep = append(turnstep,  mov1[1])
+				turnstep = append(turnstep,  mov2[0])
+				turnstep = append(turnstep,  mov2[1])
+				game_steps = append(game_steps, turnstep)
+			} else {
+				game_steps[game] = allsteps
+			}						
+			
+			game_sc[game] = i+1
+			//i32.print(game_sc[game])
+			//i32.print(len(game_steps[game]))
+		}
+
 	}
 
 	newBoard = board
-
-	var scount i32
-	scount = 1
-	//saveStep(game, player, c, mov1 [2]i32, mov2 [2]i32)
-
-	var turnstep[]i32
-	
-	turnstep = append(turnstep,  scount)
-	turnstep = append(turnstep,  mov1[0])
-	turnstep = append(turnstep,  mov1[1])
-	turnstep = append(turnstep,  mov2[0])
-	turnstep = append(turnstep,  mov2[1])
-
-	game_steps = append(game_steps, turnstep)
 
 }
 
@@ -518,30 +556,27 @@ func main() {
 	*/
 
 
-
-	var board [8][8]i32
 	var gameID str
 	var game1 i32
 	var ng i32
 	var tmov1 [2]str
 	var tmov2 [2]str
-	var msg str
-
-	board = bc.NewBoard()
-
 
 
 	// ==== step0
 	
-	str.print(bc.viewBoard(board))
-
+	var board0 [8][8]i32
+	board0 = bc.NewBoard()
 	gameID = "G-001"
 	ng = bc.newGame(gameID)
+	str.print(bc.viewBoard(board0))
 
-
+	
 
 	// ==== step1
 
+	var board1 [8][8]i32
+	board1 = bc.NewBoard()
 	gameID = "G-001"
 	game1 = bc.joinGame(gameID)
 	
@@ -550,14 +585,15 @@ func main() {
 	tmov2[0] = "b"
 	tmov2[1] = "4"
 
-	board = bc.PlayerTurn(game1, 1, tmov1, tmov2, board)
+	board1 = bc.PlayerTurn(game1, 1, tmov1, tmov2, board1)
+	str.print(bc.viewBoard(board1))
 
-	str.print(bc.viewBoard(board))
 
-
-	/*
+	
 	// ==== step2
 
+	var board2 [8][8]i32
+	board2 = bc.NewBoard()
 	gameID = "G-001"
 	game1 = bc.joinGame(gameID)
 	
@@ -566,9 +602,26 @@ func main() {
 	tmov2[0] = "c"
 	tmov2[1] = "5"
 
-	str.print(bc.PlayerTurn(gameID, 2, tmov1, tmov2, board))
+	board2 = bc.PlayerTurn(game1, 2, tmov1, tmov2, board2)
+	str.print(bc.viewBoard(board2))
+	
 
-	str.print(bc.viewBoard(board))
-	*/
+	
+	// ==== step3
+
+	var board3 [8][8]i32
+	board3 = bc.NewBoard()
+	gameID = "G-001"
+	game1 = bc.joinGame(gameID)
+	
+	tmov1[0] = "b"
+	tmov1[1] = "4"
+	tmov2[0] = "d"
+	tmov2[1] = "6"
+
+	board3 = bc.PlayerTurn(game1, 1, tmov1, tmov2, board3)
+	str.print(bc.viewBoard(board3))
+	
+	
 
 }

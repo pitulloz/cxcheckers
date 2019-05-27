@@ -6,12 +6,48 @@ tested using CX version 0.7 beta
 CX-Chain test:
 
 ```
-cx checkers-bc.cx
-test1: New game g7890 created, id: 0
-test2: error new game g7890, aleady exist!
-test3: New game g7891 created, id: 1
-test4: Join game g7891 success, id: 1
-test5: error join game g7892, not exist!
+cx-0.7b checkers-bc.cx 
+8 | = | O | = | O | = | O | = | O |
+7 | O | = | O | = | O | = | O | = |
+6 | = | O | = | O | = | O | = | O |
+5 |   | = |   | = |   | = |   | = |
+4 | = |   | = |   | = |   | = |   |
+3 | X | = | X | = | X | = | X | = |
+2 | = | X | = | X | = | X | = | = |
+1 | X | = | X | = | X | = | X | = |
+    A   B   C   D   E   F   G   H 
+Player 1 (X) move (source: a 3, destination: b 4
+8 | = | O | = | O | = | O | = | O |
+7 | O | = | O | = | O | = | O | = |
+6 | = | O | = | O | = | O | = | O |
+5 |   | = |   | = |   | = |   | = |
+4 | = | X | = |   | = |   | = |   |
+3 |   | = | X | = | X | = | X | = |
+2 | = | X | = | X | = | X | = | = |
+1 | X | = | X | = | X | = | X | = |
+    A   B   C   D   E   F   G   H 
+Player 2 (O) move (source: d 6, destination: c 5
+8 | = | O | = | O | = | O | = | O |
+7 | O | = | O | = | O | = | O | = |
+6 | = | O | = |   | = | O | = | O |
+5 |   | = | O | = |   | = |   | = |
+4 | = | X | = |   | = |   | = |   |
+3 |   | = | X | = | X | = | X | = |
+2 | = | X | = | X | = | X | = | = |
+1 | X | = | X | = | X | = | X | = |
+    A   B   C   D   E   F   G   H 
+Player 1 (X) move (source: b 4, destination: d 6
+Captured!
+8 | = | O | = | O | = | O | = | O |
+7 | O | = | O | = | O | = | O | = |
+6 | = | O | = | X | = | O | = | O |
+5 |   | = |   | = |   | = |   | = |
+4 | = |   | = |   | = |   | = |   |
+3 |   | = | X | = | X | = | X | = |
+2 | = | X | = | X | = | X | = | = |
+1 | X | = | X | = | X | = | X | = |
+    A   B   C   D   E   F   G   H 
+
 ```
 
 Interactive (Keyboard input) game without bc feature:
