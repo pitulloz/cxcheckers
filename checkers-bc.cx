@@ -1,17 +1,17 @@
 package bc
 
 // global variable for blockchain
-var game_id[]str		//game id (int auto number)
-var game_sc[]i32		//steps count for game id
-var game_steps[][]i32		//game steps sequence for game id
-var lastgame i32		//last game id
+var game_id[]str		// game id (int auto number)
+var game_sc[]i32		// steps count for game id
+var game_steps[][]i32		// game steps sequence for game id
+var lastgame i32		// last game id
 
 func newGame(id str) (pos i32){
 	var jp i32
 	jp = joinGame(id)
 	if jp == -1 {
 		game_id = append(game_id, id)
-		game_sc = append(game_sc,  0)
+		game_sc = append(game_sc, 0)
 		lastgame = len(game_id)-1
 		pos = lastgame
 	} else {
@@ -31,7 +31,6 @@ func joinGame(id str) (pos i32){
 }
 
 func viewBoard(board [8][8]i32) (v str) {
-
 	var row [8]str
 	row = [8]str {"8","7","6","5","4","3","2","1"}
 	
@@ -62,7 +61,6 @@ func viewBoard(board [8][8]i32) (v str) {
 	}
 
 	v = v + "    A   B   C   D   E   F   G   H "
-
 }
 
 func OnBoard(vert i32, hoz i32) (ob bool) {
@@ -74,7 +72,6 @@ func OnBoard(vert i32, hoz i32) (ob bool) {
 }
 
 func PosToBoard(a [2]str) (mov [2]i32) {
-
 	// invalid move
 	mov[0] = 8
 	mov[1] = 8
@@ -96,7 +93,6 @@ func PosToBoard(a [2]str) (mov [2]i32) {
 		}
 
 	}
-
 }
 
 func EnemyOnBoard(player i32, board [8][8]i32) (e bool) {
@@ -161,7 +157,6 @@ func ValidMove(player i32, mov1 [2]i32, mov2 [2]i32, capOnly bool, noLog bool, b
 	} else if board[mov1[0]][mov1[1]] == player+6 && CaptureChecks(player, mov1, mov2, capOnly, enemy, true, board) == true{
 		valid = true
 	}
-	
 }
 
 
@@ -186,8 +181,6 @@ func CaptureChecks(player i32, mov1 [2]i32, mov2 [2]i32, capOnly bool, enemy i32
 
 
 	if mov2[0]-mov1[0] == vert[0] && abshoz == 1 && !capOnly {
-
-		//printf("true: %d\n", abshoz)
 		cc = true
 		return
 	}
@@ -215,10 +208,8 @@ func ValidMoves(player i32, board [8][8]i32) (valids [][2][2]i32) {
 	for i := 0; i < 8; i++ {
 		for j := 0; j < 8; j++ {
 			
-
 			if board[i][j] != player && board[i][j] != player+6 {
-			//if board[i][j] != player {
-				//continue	-> BUG: continue exit to root level for loop
+				// continue	-> BUG: continue exit to root level for loop
 			} else {
 				var checkMoves [4][2]i32
 				checkMoves[0][0] = i + vert[0]
@@ -301,7 +292,6 @@ func PlayerTurn(game i32, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i3
 	var scount i32
 
 	scount = game_sc[game]
-	//printf("scount: %d\n", scount)
 
 	var newstep bool
 	newstep = false
@@ -355,7 +345,8 @@ func PlayerTurn(game i32, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i3
 		}
 
 		if newstep {
-			printf("Player %d (%s) move (source: %s %s, destination: %s %s\n", player, rep, tmov1[0], tmov1[1], tmov2[0], tmov2[1])
+			printf("Player %d (%s) move (source: %s %s, destination: %s %s\n",
+			 player, rep, tmov1[0], tmov1[1], tmov2[0], tmov2[1])
 		}
 
 		var enemy i32
@@ -365,14 +356,13 @@ func PlayerTurn(game i32, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i3
 			mov1 = PosToBoard(tmov1)
 			mov2 = PosToBoard(tmov2)
 		} else {
-			//printf("step:%d\n", i*4+1)
 			mov1[0] = game_steps[game][i*4]
 			mov1[1] = game_steps[game][i*4+1]
 			mov2[0] = game_steps[game][i*4+2]
 			mov2[1] = game_steps[game][i*4+3]
 		}
 
-		//reconstruction player steps
+		// reconstruction player steps
 		allsteps = append(allsteps,  mov1[0])
 		allsteps = append(allsteps,  mov1[1])
 		allsteps = append(allsteps,  mov2[0])
@@ -453,7 +443,6 @@ func PlayerTurn(game i32, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i3
 				}
 			}
 			
-
 		} else {
 			if newstep {
 				str.print("INVALID MOVE!")
@@ -464,6 +453,7 @@ func PlayerTurn(game i32, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i3
 		if newstep {
 
 			/*
+
 			slice sequence format for steps
 			game_sc[game] => step count
 			step1:
@@ -475,6 +465,8 @@ func PlayerTurn(game i32, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i3
 			step3:
 			step[8] and step[9] => player 1: source x and y
 			step[10] and step[11] => player 1: destination x and y
+			... and so on
+
 			*/			
 
 			if i == 0 {
@@ -489,14 +481,10 @@ func PlayerTurn(game i32, player i32, tmov1 [2]str, tmov2 [2]str, board [8][8]i3
 			}						
 			
 			game_sc[game] = i+1
-			//i32.print(game_sc[game])
-			//i32.print(len(game_steps[game]))
 		}
-
 	}
 
 	newBoard = board
-
 }
 
 
@@ -507,10 +495,11 @@ func main() {
 
 	bc.lastgame=-1
 
-	//tx
+	// tx
 
 	/*
-	//test1
+
+	// test1
 	var new1 i32
 	new1 = bc.newGame("g7890")
 	if new1 == -1 {
@@ -519,7 +508,7 @@ func main() {
 		printf("test1: New game g7890 created, id: %d\n", new1)
 	}
 
-	//test2
+	// test2
 	var new2 i32
 	new2 = bc.newGame("g7890")
 	if new2 == -1 {
@@ -528,7 +517,7 @@ func main() {
 		printf("test2: New game g7890 created, id: %d\n", new2)
 	}
 
-	//test3
+	// test3
 	new2 = bc.newGame("g7891")
 	if new2 == -1 {
 		printf("test3: error new game g7891, aleady exist!\n")
@@ -536,7 +525,7 @@ func main() {
 		printf("test3: New game g7891 created, id: %d\n", new2)
 	}
 
-	//test4
+	// test4
 	var join1 i32
 	join1 = bc.joinGame("g7891")
 	if join1 == -1 {
@@ -545,7 +534,7 @@ func main() {
 		printf("test4: Join game g7891 success, id: %d\n", join1)
 	}
 
-	//test5
+	// test5
 	var join2 i32
 	join2 = bc.joinGame("g7892")
 	if join2 == -1 {
@@ -553,14 +542,15 @@ func main() {
 	} else {
 		printf("test5: Join game g7892 success, id: %d\n", join2)
 	}
-	*/
 
+	*/
 
 	var gameID str
 	var game1 i32
 	var ng i32
 	var tmov1 [2]str
 	var tmov2 [2]str
+
 
 
 	// ==== step0
@@ -621,7 +611,4 @@ func main() {
 
 	board3 = bc.PlayerTurn(game1, 1, tmov1, tmov2, board3)
 	str.print(bc.viewBoard(board3))
-	
-	
-
 }
