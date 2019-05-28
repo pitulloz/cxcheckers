@@ -1,0 +1,25 @@
+package main
+import "bc"
+
+func main() {
+	var gameID str
+	var game1 i32
+	var ng i32
+	var tmov1 [2]str
+	var tmov2 [2]str
+	
+	// ==== step3
+
+	var board3 [8][8]i32
+	board3 = bc.NewBoard()
+	gameID = "G-001"
+	game1 = bc.joinGame(gameID)
+	
+	tmov1[0] = "b"
+	tmov1[1] = "4"
+	tmov2[0] = "d"
+	tmov2[1] = "6"
+
+	board3 = bc.PlayerTurn(game1, 1, tmov1, tmov2, board3)
+	str.print(bc.viewBoard(board3))
+}

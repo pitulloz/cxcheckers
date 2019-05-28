@@ -1,0 +1,50 @@
+package main
+import "bc"
+
+func main() {
+
+	// test1
+	var new1 i32
+	new1 = bc.newGame("g7890")
+	if new1 == -1 {
+		printf("test1: error new game g7890, aleady exist!\n")
+	} else {
+		printf("test1: New game g7890 created, id: %d\n", new1)
+	}
+
+	// test2
+	var new2 i32
+	new2 = bc.newGame("g7890")
+	if new2 == -1 {
+		printf("test2: error new game g7890, aleady exist!\n")
+	} else {
+		printf("test2: New game g7890 created, id: %d\n", new2)
+	}
+
+	// test3
+	new2 = bc.newGame("g7891")
+	if new2 == -1 {
+		printf("test3: error new game g7891, aleady exist!\n")
+	} else {
+		printf("test3: New game g7891 created, id: %d\n", new2)
+	}
+
+	// test4
+	var join1 i32
+	join1 = bc.joinGame("g7891")
+	if join1 == -1 {
+		printf("test4: error join game g7891, not exist!\n")
+	} else {
+		printf("test4: Join game g7891 success, id: %d\n", join1)
+	}
+
+	// test5
+	var join2 i32
+	join2 = bc.joinGame("g7892")
+	if join2 == -1 {
+		printf("test5: error join game g7892, not exist!\n")
+	} else {
+		printf("test5: Join game g7892 success, id: %d\n", join2)
+	}
+
+}
